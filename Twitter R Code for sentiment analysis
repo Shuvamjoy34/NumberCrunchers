@@ -1,0 +1,94 @@
+#Install and Load R packages
+ install.packages("twitteR")
+ library("twitteR")
+library(twitteR)
+ library(SnowballC) 
+library(tm) 
+library(syuzhet) 
+library(RJSONIO) 
+library(RCurl) 
+library(stringr) 
+library(wordcloud) 
+library(httr) 
+library(rtweet) 
+library(tidaytext) 
+library(RColorBrewer) 
+library(ggthemes) 
+library(map) 
+library(gganimate) 
+library(lubricate)
+ library(leaflet) 
+library(rtweet) 
+library(ggplot2)
+
+#Authentication Key
+ consumer_key <- "UuFnyS4HICcCnMXSPzHjGGpmG" 
+consumer_secret <-"BN6SaOkiB4PO2rq9TcrQ55XbKUtozh7QfnPzQhq1sdyfijXkPU" 
+access_token <- "2968214120-jkb9iYDKpwqLleh2s4DzQsSme8ZhXIwPITacSgm" 
+access_secret <- "rlXsaP0xelHYiTXr9OWDzzF1KfLwj2y3ySpXVaC92UBkK"
+
+# Create Twitter Connection
+ setup_twitter_oauth(consumer_key, consumer_secret, access_token, access_secret
+#Extract Tweets 
+tweets <- searchTwitter("Environment", n=597, lang="en", Date="2019-10-21") 
+tweets 
+tweets.text <- sapply(tweets, function(x) x$getText()) 
+strip_retweets(tweets)
+ users_data(tweets) 
+lat_lng(tweets)
+tweets.df <- twListToDF(tweets)
+ head(tweets.df) 
+head(tweets.df$text) 
+tweets.df <- unique(tweets.df) 
+View(tweets.df) 
+head(tweets.df)
+
+#convert all text to lower case 
+tweets.text <- tolower(tweets.text)
+
+# Replace blank space (“rt”)
+ tweets.text <- gsub("rt", "", tweets.text)
+
+# Replace @UserName 
+tweets.text <- gsub("@\\w+", "", tweets.text)
+
+# Remove punctuation 
+tweets.text <- gsub("[[:punct:]]", "", tweets.text)
+
+# Remove links
+ tweets.text <- gsub("http\\w+", "", tweets.text)
+
+# Remove tabs 
+tweets.text <- gsub("[ |\t]{2,}", "", tweets.text)
+# Remove blank spaces at the beginning 
+tweets.text <- gsub("^ ", "", tweets.text)
+
+# Remove blank spaces at the end
+ tweets.text <- gsub(" $", "", tweets.text)
+
+#create corpus 
+tweets.text.corpus <- Corpus(VectorSource(tweets.text))
+
+#clean up by removing stop words
+ tweets.text.corpus <- tm_map(tweets.text.corpus, function(x)removeWords(x,stopwords()))
+
+#Creating Wordcloud 
+wordcloud(tweets.text.corpus,min.freq = 2, scale=c(7,0.5),colors=brewer.pal(8, "Dark2"), random.color= TRUE, random.order = FALSE, max.words = 150)
+
+#Sentiment Analysis 
+word.df <- as.vector(tweets.df2) 
+emotion.df <- get_nrc_sentiment(word.df) 
+emotion.df2 <- cbind(tweets.df2, emotion.df)
+ head(emotion.df2) 
+sent.value <- get_sentiment(word.df) 
+most.positive <- word.df[sent.value == max(sent.value)] 
+most.positive 
+most.negative <- word.df[sent.value <= min(sent.value)] 
+most.negative
+ sent.value 
+positive.tweets <- word.df[sent.value > 0] 
+head(positive.tweets) 
+negative.tweets <- word.df[sent.value < 0] 
+head(negative.tweets) 
+2neutral.tweets <- word.df[sent.value == 0] .L
+head(neutral.tweets)
